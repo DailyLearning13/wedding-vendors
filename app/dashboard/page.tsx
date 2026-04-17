@@ -106,15 +106,17 @@ export default function DashboardPage() {
     };
   }, [supabase]);
 
-  // Load photos (FIXED HERE)
+  // Load photos (FINAL FIX)
   useEffect(() => {
-    if (state.status !== "ready" || !state.vendor) return;
+    if (state.status !== "ready") return;
+
+    const vendor = state.vendor; // 🔥 critical fix
 
     async function loadPhotos() {
       const { data, error } = await supabase
         .from("vendor_photos")
         .select("id,vendor_id,storage_path,sort_order,created_at")
-        .eq("vendor_id", state.vendor.id)
+        .eq("vendor_id", vendor.id)
         .order("sort_order", { ascending: true })
         .order("created_at", { ascending: true });
 
@@ -131,13 +133,15 @@ export default function DashboardPage() {
   async function handleUpload(files: FileList | null) {
     if (!files || state.status !== "ready") return;
 
+    const vendor = state.vendor;
+
     setUploading(true);
 
     try {
       for (const file of Array.from(files)) {
         const ext = file.name.split(".").pop();
         const fileName = `${crypto.randomUUID()}.${ext}`;
-        const storagePath = `${state.vendor.id}/${fileName}`;
+        const storagePath = `${vendor.id}/${fileName}`;
 
         const { error: uploadErr } = await supabase.storage
           .from("vendor-images")
@@ -151,7 +155,7 @@ export default function DashboardPage() {
         const { error: insertErr } = await supabase
           .from("vendor_photos")
           .insert({
-            vendor_id: state.vendor.id,
+            vendor_id: vendor.id,
             storage_path: storagePath,
           });
 
