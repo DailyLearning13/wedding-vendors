@@ -52,17 +52,22 @@ export default function VendorsListClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  // ✅ SAFE PARAM READ (fixes Next.js issues)
+  const searchValue = searchParams.get("search") || "";
+  const stateValue = searchParams.get("state") || "";
+  const categoryValue = searchParams.get("category") || "";
+
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const [search, setSearch] = useState(searchParams.get("search") || "");
-  const [stateFilter, setStateFilter] = useState(searchParams.get("state") || "");
-  const [categoryFilter, setCategoryFilter] = useState(searchParams.get("category") || "");
+  const [search, setSearch] = useState(searchValue);
+  const [stateFilter, setStateFilter] = useState(stateValue);
+  const [categoryFilter, setCategoryFilter] = useState(categoryValue);
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
   const [sortBy, setSortBy] = useState("priority");
 
-  const PAGE_SIZE = 12; // ✅ 12 per page
+  const PAGE_SIZE = 12;
   const [page, setPage] = useState(1);
 
   /* ---------------- URL SYNC ---------------- */
@@ -75,12 +80,12 @@ export default function VendorsListClient() {
     if (categoryFilter) params.set("category", categoryFilter);
 
     router.replace(`/vendors?${params.toString()}`);
-  }, [search, stateFilter, categoryFilter]);
+  }, [search, stateFilter, categoryFilter, router]);
 
   /* ---------------- LOAD DATA ---------------- */
 
   useEffect(() => {
-    const load = async () => {
+    async function load() {
       setLoading(true);
 
       let query = supabase
@@ -90,39 +95,52 @@ export default function VendorsListClient() {
           reviews (rating)
         `)
         .eq("is_approved", true)
-        .range(0, 1000); // ✅ Prevent Supabase limiting results
+        .range(0, 1000);
 
-      if (stateFilter)
+      if (stateFilter) {
         query = query.eq("state_province", stateFilter);
+      }
 
-      if (categoryFilter)
+      if (categoryFilter) {
         query = query.eq("category", categoryFilter);
+      }
 
-      if (search)
+      if (search) {
         query = query.ilike("business_name", `%${search}%`);
+      }
 
-      if (minPrice)
+      if (minPrice) {
         query = query.gte("starting_price", Number(minPrice));
+      }
 
-      if (maxPrice)
+      if (maxPrice) {
         query = query.lte("starting_price", Number(maxPrice));
+      }
 
-      if (sortBy === "newest")
+      if (sortBy === "newest") {
         query = query.order("created_at", { ascending: false });
+      }
 
-      if (sortBy === "price_low")
+      if (sortBy === "price_low") {
         query = query.order("starting_price", { ascending: true });
+      }
 
-      if (sortBy === "price_high")
+      if (sortBy === "price_high") {
         query = query.order("starting_price", { ascending: false });
+      }
 
-      if (sortBy === "priority")
+      if (sortBy === "priority") {
         query = query
           .order("is_featured", { ascending: false })
           .order("is_verified", { ascending: false })
           .order("created_at", { ascending: false });
+      }
 
-      const { data } = await query;
+      const { data, error } = await query;
+
+      if (error) {
+        console.error("Error loading vendors:", error);
+      }
 
       const enriched =
         data?.map((v: any) => {
@@ -142,7 +160,7 @@ export default function VendorsListClient() {
 
       setVendors(enriched);
       setLoading(false);
-    };
+    }
 
     load();
   }, [search, stateFilter, categoryFilter, minPrice, maxPrice, sortBy]);
@@ -166,7 +184,7 @@ export default function VendorsListClient() {
           </p>
         </div>
 
-        {/* SEARCH + FILTERS */}
+        {/* FILTERS */}
         <div className="bg-white text-black p-6 rounded-3xl shadow-md space-y-4">
 
           <input
@@ -178,54 +196,19 @@ export default function VendorsListClient() {
 
           <div className="flex flex-wrap gap-4">
 
-            <select
-              value={stateFilter}
-              onChange={(e) => setStateFilter(e.target.value)}
-              className="border rounded-xl px-4 py-2 text-black"
-            >
+            <select value={stateFilter} onChange={(e) => setStateFilter(e.target.value)} className="border rounded-xl px-4 py-2">
               <option value="">All States</option>
-              {STATES.map((s) => (
-                <option key={s}>{s}</option>
-              ))}
+              {STATES.map((s) => <option key={s}>{s}</option>)}
             </select>
 
-            <select
-              value={categoryFilter}
-              onChange={(e) => setCategoryFilter(e.target.value)}
-              className="border rounded-xl px-4 py-2 text-black"
-            >
+            <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} className="border rounded-xl px-4 py-2">
               <option value="">All Categories</option>
-              {CATEGORIES.map((c) => (
-                <option key={c}>{c}</option>
-              ))}
+              {CATEGORIES.map((c) => <option key={c}>{c}</option>)}
             </select>
 
-            <input
-              type="number"
-              placeholder="Min $"
-              value={minPrice}
-              onChange={(e) => setMinPrice(e.target.value)}
-              className="border rounded-xl px-4 py-2 w-32 text-black"
-            />
+            <input type="number" placeholder="Min $" value={minPrice} onChange={(e) => setMinPrice(e.target.value)} className="border rounded-xl px-4 py-2 w-32" />
+            <input type="number" placeholder="Max $" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} className="border rounded-xl px-4 py-2 w-32" />
 
-            <input
-              type="number"
-              placeholder="Max $"
-              value={maxPrice}
-              onChange={(e) => setMaxPrice(e.target.value)}
-              className="border rounded-xl px-4 py-2 w-32 text-black"
-            />
-
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="border rounded-xl px-4 py-2 text-black"
-            >
-              <option value="priority">Featured & Verified</option>
-              <option value="newest">Newest</option>
-              <option value="price_low">Lowest Price</option>
-              <option value="price_high">Highest Price</option>
-            </select>
           </div>
         </div>
 
@@ -233,84 +216,17 @@ export default function VendorsListClient() {
         {loading ? (
           <div>Loading vendors...</div>
         ) : (
-          <>
-            <div className="grid md:grid-cols-3 gap-10">
-              {paginated.map((vendor) => {
-                const color =
-                  categoryColors[vendor.category] ||
-                  "bg-gray-200 text-gray-900";
-
-                return (
-                  <Link
-                    key={vendor.id}
-                    href={`/vendors/${vendor.id}`}
-                    className={`relative p-6 rounded-3xl transition-all duration-300 transform hover:-translate-y-1 hover:shadow-2xl ${
-                      vendor.is_featured
-                        ? "bg-gradient-to-br from-amber-100 to-white border border-amber-300"
-                        : "bg-white border border-neutral-200"
-                    }`}
-                  >
-                    <div className="flex justify-between mb-4">
-                      <span
-                        className={`text-xs px-3 py-1 rounded-full font-semibold ${color}`}
-                      >
-                        {vendor.category}
-                      </span>
-
-                      {vendor.is_verified && (
-                        <span className="text-xs bg-green-600 text-white px-3 py-1 rounded-full">
-                          ✓ Verified
-                        </span>
-                      )}
-                    </div>
-
-                    <h3 className="text-xl font-semibold text-neutral-900">
-                      {vendor.business_name}
-                    </h3>
-
-                    <p className="text-neutral-600 mt-1">
-                      {vendor.city}, {vendor.state_province}
-                    </p>
-
-                    {vendor.average_rating && (
-                      <div className="mt-3 text-amber-600 font-medium">
-                        ⭐ {vendor.average_rating.toFixed(1)} ({vendor.review_count})
-                      </div>
-                    )}
-
-                    <p className="mt-4 font-semibold text-neutral-900">
-                      ${vendor.starting_price?.toLocaleString()}
-                    </p>
-                  </Link>
-                );
-              })}
-            </div>
-
-            {/* PAGINATION */}
-            {totalPages > 1 && (
-              <div className="flex justify-center items-center gap-4 mt-12">
-                <button
-                  disabled={page === 1}
-                  onClick={() => setPage(page - 1)}
-                  className="px-4 py-2 border rounded-xl bg-white text-black disabled:opacity-40"
-                >
-                  Prev
-                </button>
-
-                <span className="text-black font-medium">
-                  Page {page} of {totalPages}
-                </span>
-
-                <button
-                  disabled={page === totalPages}
-                  onClick={() => setPage(page + 1)}
-                  className="px-4 py-2 border rounded-xl bg-white text-black disabled:opacity-40"
-                >
-                  Next
-                </button>
-              </div>
-            )}
-          </>
+          <div className="grid md:grid-cols-3 gap-10">
+            {paginated.map((vendor) => (
+              <Link key={vendor.id} href={`/vendors/${vendor.id}`}>
+                <div className="p-6 rounded-2xl border bg-white hover:shadow-lg transition">
+                  <h3 className="text-lg font-semibold">{vendor.business_name}</h3>
+                  <p>{vendor.city}, {vendor.state_province}</p>
+                  <p>${vendor.starting_price?.toLocaleString()}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
         )}
       </div>
     </div>
