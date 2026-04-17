@@ -49,13 +49,15 @@ export default function DashboardPage() {
   const [uploading, setUploading] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
 
+  // Load user + vendor
   useEffect(() => {
     let cancelled = false;
 
     async function run() {
       setState({ status: "loading" });
 
-      const { data: userData, error: userErr } = await supabase.auth.getUser();
+      const { data: userData, error: userErr } =
+        await supabase.auth.getUser();
       if (cancelled) return;
 
       if (userErr) {
@@ -104,8 +106,9 @@ export default function DashboardPage() {
     };
   }, [supabase]);
 
+  // Load photos (FIXED HERE)
   useEffect(() => {
-    if (state.status !== "ready") return;
+    if (state.status !== "ready" || !state.vendor) return;
 
     async function loadPhotos() {
       const { data, error } = await supabase
@@ -117,6 +120,8 @@ export default function DashboardPage() {
 
       if (!error && data) {
         setPhotos(data);
+      } else {
+        console.error("Error loading photos:", error);
       }
     }
 
@@ -186,7 +191,9 @@ export default function DashboardPage() {
   }
 
   function getPublicUrl(path: string) {
-    const { data } = supabase.storage.from("vendor-images").getPublicUrl(path);
+    const { data } = supabase.storage
+      .from("vendor-images")
+      .getPublicUrl(path);
     return data.publicUrl;
   }
 
