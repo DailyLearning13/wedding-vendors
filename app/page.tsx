@@ -1,167 +1,103 @@
-export default function Home() {
+import Link from "next/link";
+import FeaturedVendors from "./components/FeaturedVendors";
+
+const CATEGORY_MAP = [
+  { label: "Makeup", value: "Makeup" },
+  { label: "Hair", value: "Hair" },
+  { label: "Decor", value: "Decor" },
+  { label: "DJ", value: "DJ" },
+  { label: "Live Music", value: "Live Music" },
+  { label: "Photographer", value: "Photographer" },
+  { label: "Videographer", value: "Videographer" },
+  { label: "Venue", value: "Venue" },
+  { label: "Catering", value: "Catering" },
+];
+
+export default function HomePage() {
   return (
-    <main className="min-h-screen bg-white text-zinc-900">
-      {/* Header */}
-      <header className="border-b">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
-          <div className="font-semibold tracking-tight">
-            Wedding Vendors
-          </div>
-          <nav className="flex items-center gap-4 text-sm text-zinc-600">
-            <a href="#categories" className="hover:text-zinc-900">
-              Categories
-            </a>
-            <a href="#how" className="hover:text-zinc-900">
-              How it works
-            </a>
-            <a href="/vendors" className="hover:text-zinc-900">
-              Vendors
-            </a>
-          </nav>
-        </div>
-      </header>
+    <main className="bg-background text-foreground">
 
-      {/* Hero */}
-      <section className="mx-auto max-w-5xl px-6 py-16">
-        <div className="rounded-3xl border bg-zinc-50 p-10 shadow-sm">
-          <h1 className="text-4xl font-semibold tracking-tight">
-            Find trusted Punjabi wedding vendors — fast.
-          </h1>
+      {/* HERO */}
+      <section className="min-h-[75vh] flex flex-col justify-center items-center text-center px-6">
+        <div className="max-w-4xl">
 
-          <p className="mt-4 max-w-2xl text-lg text-zinc-600">
-            Search DJs, decor, venues, photo/video, makeup, dhol, and more.
-            Built for the East Coast — expanding across the US & Canada.
+          <p className="uppercase tracking-[0.4em] text-xs text-neutral-500 mb-6">
+            Punjabi Wedding Marketplace
           </p>
 
-          {/* Search UI (placeholder) */}
-          <div className="mt-8 grid gap-3 sm:grid-cols-3">
-            <div className="sm:col-span-2">
-              <label className="text-sm text-zinc-600">Search</label>
-              <input
-                className="mt-2 w-full rounded-xl border bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-zinc-900/10"
-                placeholder="Try: DJ, Decor, Photographer…"
-              />
-            </div>
+          <h1 className="text-6xl md:text-7xl font-serif leading-tight tracking-tight">
+            Celebrate Bigger.
+            <br />
+            Plan Smarter.
+          </h1>
 
-            <div>
-              <label className="text-sm text-zinc-600">Location</label>
-              <select className="mt-2 w-full rounded-xl border bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-zinc-900/10">
-                <option>New Jersey</option>
-                <option>New York</option>
-                <option>Pennsylvania</option>
-                <option>Virginia</option>
-                <option>Massachusetts</option>
-                <option>Ontario</option>
-              </select>
-            </div>
-          </div>
+          <p className="mt-8 text-lg text-neutral-600 leading-relaxed max-w-2xl mx-auto">
+            A refined marketplace for modern Punjabi weddings.
+            Discover culturally fluent vendors across the United States.
+          </p>
 
-          {/* CTA Buttons */}
-          <div className="mt-6 flex flex-wrap gap-3">
-            <a
+          <div className="mt-12 flex justify-center gap-12">
+            <Link
               href="/vendors"
-              className="inline-flex items-center justify-center rounded-xl bg-zinc-900 px-5 py-3 text-sm font-medium text-white hover:bg-zinc-800"
+              className="text-sm uppercase tracking-[0.3em] border-b border-foreground pb-2 hover:text-amber-600 hover:border-amber-600 transition"
             >
-              Browse vendors
-            </a>
+              Explore Vendors
+            </Link>
 
-            <a
-              href="/vendor"
-              className="inline-flex items-center justify-center rounded-xl border bg-white px-5 py-3 text-sm font-medium hover:bg-zinc-50"
+            <Link
+              href="/become-a-vendor"
+              className="text-sm uppercase tracking-[0.3em] border-b border-foreground pb-2 hover:text-amber-600 hover:border-amber-600 transition"
             >
-              I’m a vendor
-            </a>
+              Become a Vendor
+            </Link>
           </div>
 
-          {/* Value props */}
-          <div className="mt-8 grid gap-4 sm:grid-cols-3">
-            <div className="rounded-2xl border bg-white p-5">
-              <div className="text-sm font-medium">Verified listings</div>
-              <div className="mt-1 text-sm text-zinc-600">
-                Cleaner results, fewer scams, better leads.
-              </div>
-            </div>
+        </div>
+      </section>
 
-            <div className="rounded-2xl border bg-white p-5">
-              <div className="text-sm font-medium">Fast shortlists</div>
-              <div className="mt-1 text-sm text-zinc-600">
-                Save, compare, and message vendors easily.
-              </div>
-            </div>
+      {/* FEATURED VENDORS */}
+      <FeaturedVendors />
 
-            <div className="rounded-2xl border bg-white p-5">
-              <div className="text-sm font-medium">
-                Built for Punjabi weddings
-              </div>
-              <div className="mt-1 text-sm text-zinc-600">
-                Categories and needs that actually match your events.
-              </div>
-            </div>
+      {/* CATEGORIES */}
+      <section className="px-6 py-24">
+        <div className="max-w-5xl mx-auto">
+
+          <h2 className="text-4xl font-serif text-center mb-14">
+            Explore by Category
+          </h2>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            {CATEGORY_MAP.map((category) => (
+              <Link
+                key={category.label}
+                href={`/vendors?category=${encodeURIComponent(category.value)}`}
+                className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 p-10 text-center font-serif text-2xl tracking-wide hover:border-amber-600 hover:text-amber-600 transition duration-300 rounded-xl"
+              >
+                {category.label}
+              </Link>
+            ))}
           </div>
+
         </div>
       </section>
 
-      {/* Categories */}
-      <section id="categories" className="mx-auto max-w-5xl px-6 pb-10">
-        <h2 className="text-xl font-semibold tracking-tight">
-          Popular categories
-        </h2>
+      {/* BRAND STATEMENT */}
+      <section className="px-6 py-24 bg-white dark:bg-neutral-900">
+        <div className="max-w-3xl mx-auto text-center">
 
-        <div className="mt-4 grid gap-3 sm:grid-cols-3">
-          {[
-            "DJ / MC",
-            "Decor",
-            "Venue",
-            "Photo / Video",
-            "Makeup / Hair",
-            "Dhol / Live Music",
-          ].map((c) => (
-            <div
-              key={c}
-              className="rounded-2xl border bg-white p-5 text-sm font-medium hover:bg-zinc-50"
-            >
-              {c}
-            </div>
-          ))}
+          <h2 className="text-4xl font-serif mb-6">
+            Begin Your Celebration.
+          </h2>
+
+          <p className="text-neutral-600 dark:text-neutral-400 leading-loose text-lg">
+            From Sangeet to Baraat to Anand Karaj, our vendors understand
+            the scale, detail, and tradition of multi-day Punjabi celebrations.
+            We curate professionals who blend heritage with modern refinement.
+          </p>
+
         </div>
       </section>
 
-      {/* How it works */}
-      <section id="how" className="mx-auto max-w-5xl px-6 py-10">
-        <h2 className="text-xl font-semibold tracking-tight">
-          How it works
-        </h2>
-
-        <ol className="mt-4 grid gap-3 sm:grid-cols-3">
-          <li className="rounded-2xl border bg-white p-5">
-            <div className="text-sm font-medium">1) Search</div>
-            <div className="mt-1 text-sm text-zinc-600">
-              Filter by category, city, and budget.
-            </div>
-          </li>
-
-          <li className="rounded-2xl border bg-white p-5">
-            <div className="text-sm font-medium">2) Shortlist</div>
-            <div className="mt-1 text-sm text-zinc-600">
-              Save vendors and compare packages.
-            </div>
-          </li>
-
-          <li className="rounded-2xl border bg-white p-5">
-            <div className="text-sm font-medium">3) Book</div>
-            <div className="mt-1 text-sm text-zinc-600">
-              Message directly and lock the date.
-            </div>
-          </li>
-        </ol>
-      </section>
-
-      {/* Footer */}
-      <footer className="mt-10 border-t">
-        <div className="mx-auto max-w-5xl px-6 py-8 text-sm text-zinc-600">
-          © {new Date().getFullYear()} Wedding Vendors · Built with Next.js
-        </div>
-      </footer>
     </main>
   );
 }

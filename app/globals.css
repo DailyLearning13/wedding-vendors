@@ -3,6 +3,7 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --border-color: #e5e5e5;
 }
 
 @theme inline {
@@ -12,10 +13,12 @@
   --font-mono: var(--font-geist-mono);
 }
 
+/* Dark mode: keep things visible and high-contrast */
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #0f0f10;     /* not pure black */
+    --foreground: #f5f5f5;     /* bright text */
+    --border-color: #2a2a2a;   /* visible borders */
   }
 }
 
@@ -23,4 +26,9 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Make sure borders are visible in dark mode */
+* {
+  border-color: var(--border-color);
 }
