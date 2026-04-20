@@ -40,49 +40,51 @@ export default function FeaturedVendors() {
   if (vendors.length === 0) return null;
 
   return (
-    <section className="px-6 py-24 bg-white">
-      <div className="max-w-6xl mx-auto space-y-12">
-
-        <div className="text-center space-y-4">
-          <p className="uppercase tracking-[0.4em] text-xs text-neutral-500">
-            Premium Partners
+    <section className="border-y border-white/10 bg-gradient-to-b from-neutral-950 via-neutral-900 to-neutral-950 px-6 pb-10 pt-8 text-neutral-100 md:pb-12 md:pt-10">
+      <div className="mx-auto max-w-6xl space-y-8 md:space-y-10">
+        <div className="space-y-2 text-center md:space-y-3">
+          <p className="text-xs uppercase tracking-[0.4em] text-amber-400/95">
+            Premium partners
           </p>
-          <h2 className="text-4xl font-serif">
-            Featured Vendors
+          <h2 className="font-serif text-3xl text-white md:text-4xl md:leading-tight">
+            Featured vendors
           </h2>
+          <p className="mx-auto max-w-xl text-sm leading-relaxed text-neutral-400 md:text-base">
+            Handpicked teams we trust for multi-day celebrations — clear
+            pricing, responsive planning, and cultural fluency.
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-5">
           {vendors.map((vendor) => (
             <Link
               key={vendor.id}
               href={`/vendors/${vendor.id}`}
-              className="border border-neutral-200 rounded-2xl p-6 hover:shadow-md transition bg-neutral-50"
+              className="group rounded-2xl border border-white/10 bg-white/[0.04] p-5 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.5)] ring-1 ring-white/5 transition hover:border-amber-500/40 hover:bg-white/[0.07] md:p-6"
             >
-              <div className="flex justify-between items-start mb-4">
-                <span className="text-xs bg-amber-500 text-white px-3 py-1 rounded-full">
+              <div className="mb-3 flex items-start justify-between gap-3">
+                <span className="rounded-full bg-amber-500/95 px-3 py-1 text-xs font-semibold text-neutral-950">
                   ★ Featured
                 </span>
-                <span className="text-xs text-neutral-500">
+                <span className="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-medium text-neutral-200">
                   {vendor.category}
                 </span>
               </div>
 
-              <h3 className="text-lg font-semibold mb-2">
+              <h3 className="text-lg font-semibold text-white group-hover:text-amber-200/95">
                 {vendor.business_name}
               </h3>
 
-              <p className="text-sm text-neutral-600">
+              <p className="mt-2 text-sm text-neutral-400">
                 {vendor.city}, {vendor.state_province}
               </p>
 
-              <p className="text-sm font-medium mt-3">
+              <p className="mt-3 text-sm font-medium text-amber-200/90">
                 Starting at ${vendor.starting_price?.toLocaleString()}
               </p>
             </Link>
           ))}
         </div>
-
       </div>
     </section>
   );

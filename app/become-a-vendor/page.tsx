@@ -6,13 +6,19 @@ import { createClient } from "@/lib/supabase/client";
 const CATEGORIES = [
   "Makeup",
   "Hair",
-  "DJ",
+  "Decor",
+  "DJ / Music",
+  "Tent",
   "Photographer",
   "Videographer",
-  "Decor",
   "Venue",
   "Catering",
 ];
+
+function categoryOptionLabel(c: string) {
+  if (c === "DJ / Music") return "DJ / Live Music";
+  return c;
+}
 
 const STATES = [
   "AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA",
@@ -156,7 +162,9 @@ export default function BecomeAVendorPage() {
               >
                 <option value="">Select Category</option>
                 {CATEGORIES.map((c) => (
-                  <option key={c} value={c}>{c}</option>
+                  <option key={c} value={c}>
+                    {categoryOptionLabel(c)}
+                  </option>
                 ))}
               </select>
 
